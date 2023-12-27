@@ -1,0 +1,119 @@
+from Importation import *
+
+class MenuApp:
+    def __init__(self):
+        self.master = tk.Tk()
+        self.w = 1000
+        self.h = 500
+
+        self.create_menu()
+        self.create_buttons()
+        self.configure_window()
+
+    def create_menu(self):
+        menuBar = tk.Menu(self.master)
+
+        menuFichier1 = tk.Menu(menuBar, tearoff=0)
+        menuBar.add_cascade(label="Fichier", menu=menuFichier1)
+        menuFichier1.add_command(label="Assiette de calcul")
+        menuFichier1.add_command(label="Rapport de stabilité")
+        menuFichier1.add_command(label="Quitter")
+
+        menuFichier2 = tk.Menu(menuBar, tearoff=0)
+        menuBar.add_cascade(label="Chargement", menu=menuFichier2)
+        menuFichier2.add_command(label="Materiel et Equipage")
+        menuFichier2.add_command(label="Passagers", command=self.validation6)
+        menuFichier2.add_command(label="Cargo", command=self.validation7)
+
+        menuFichier3 = tk.Menu(menuBar, tearoff=0)
+        menuBar.add_cascade(label="Visualisation", menu=menuFichier3)
+        menuFichier3.add_command(label="Plan des fluides", command=self.plan_nav)
+        menuFichier3.add_command(label="Courbe de stabilité", command=self.deadweight)
+
+        menuFichier4 = tk.Menu(menuBar, tearoff=0)
+        menuBar.add_cascade(label="Imprimer", menu=menuFichier4)
+        menuFichier4.add_command(label="Etat", command=self.export_to_pdf)
+        menuFichier4.add_command(label="Courbe de stabilité")
+        menuFichier4.add_command(label="Plan des fluides")
+
+        self.master.config(menu=menuBar)
+
+    def configure_window(self):
+        screen_width = self.master.winfo_screenwidth()
+        screen_height = self.master.winfo_screenheight()
+
+        x = (1024 / 2) - (self.w / 2) - 25
+        y = (525 / 2) - (self.h / 2) - 25
+
+        self.master.geometry(f'{self.w}x{self.h}+{int(x)}+{int(y)}')
+
+        canvas = tk.Canvas(self.master, highlightthickness=0)
+        canvas.pack(expand=1, fill='both')
+
+    def create_buttons(self):
+        buttons = [
+            ("FUEL OIL", 'grey', 8, 1, 10, 10, self.validation1),
+            ("FRESH WATER", 'cyan', 12, 1, 80, 10, self.validation2),
+            ("LUB. OIL", 'yellow', 12, 1, 180, 10, self.validation3),
+            ("WATER BALLAST", '#0066FF', 15, 1, 280, 10, self.validation4),
+            ("DIVERSE LIQUID", '#66FF33', 15, 1, 400, 10, self.validation5),
+        ]
+
+        for text, bg, width, height, x, y, command in buttons:
+            button = tk.Button(text=text, bg=bg, width=width, height=height, font=('Tahoma', 10), command=command)
+            button.place(x=x, y=y)
+
+    def validation1(self):
+        self.create_validation_window(self.validation, 400, 260, 85, 175)
+
+    def validation2(self):
+        self.create_validation_window(self.validation, 400, 100, 85, 475)
+
+    def validation3(self):
+        self.create_validation_window(self.validation, 400, 100, 85, 615)
+
+    def validation4(self):
+        self.create_validation_window(self.validation, 400, 200, 495, 175)
+
+    def validation5(self):
+        self.create_validation_window(self.validation, 400, 200, 495, 500)
+
+    def validation6(self):
+        self.create_validation_window(self.validation2, 400, 200, 495, 500)
+
+    def validation7(self):
+        self.create_validation_window(self.validation3, 400, 500, 495, 500)
+
+    def create_validation_window(self, fetch_function, width, height, x, y):
+        root = tk.Tk()
+        ents = fetch_function(root)
+        root.bind('<Return>', (lambda event, e=ents: self.fetch(e)))
+        root.resizable(height=False, width=False)
+        root.geometry(f'{width}x{height}+{x}+{y}')
+        b1 = tk.Button(root, text='Valider', command=(lambda e=ents: self.fetch(e)))
+        b1.pack(side=tk.RIGHT, padx=5, pady=5)
+
+    def fetch(self, entries):
+        pass  # Add your logic for fetching data
+
+    def fetch2(self, entries):
+        pass  # Add your logic for fetching data
+
+    def fetch3(self, entries):
+        pass  # Add your logic for fetching data
+
+    def plan_nav(self):
+        pass  # Add your logic for plan_nav
+
+    def deadweight(self):
+        pass  # Add your logic for deadweight
+
+    def export_to_pdf(self):
+        pass  # Add your logic for export_to_pdf
+
+    def run(self):
+        self.master.mainloop()
+
+# Usage
+app = MenuApp()
+app.run()

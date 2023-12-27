@@ -1,0 +1,456 @@
+from Importation import *
+
+class Reservoir:
+    def __init__(self, database):
+        self.db = database
+
+    def ajout_reservoir(self):
+        root = tk.Tk()
+        lab0 = tk.Label(root, width=10, text="Intitulé", borderwidth=1, anchor="ne")
+        lab0_ = tk.Label(root, width=10, text="VolMax", borderwidth=1, anchor="ne")
+        lab0__ = tk.Label(root, width=10, text="Comp", borderwidth=1, anchor="ne")
+        ent1 = tk.Entry(root, width=10)
+        ent2 = tk.Entry(root, width=10)
+        ent3 = tk.Entry(root, width=10)
+        lab0.grid(row=1, column=1)
+        lab0_.grid(row=2, column=1)
+        lab0__.grid(row=3, column=1)
+        ent1.grid(row=1, column=2)
+        ent2.grid(row=2, column=2)
+        ent3.grid(row=3, column=2)
+
+        def browsefunc():
+            # ... (code à l'intérieur de la fonction browsefunc)
+            intitule = ent1.get()
+            volmax = ent2.get()
+            idCo = ent3.get()
+            r = "INSERT INTO Reservoir(Intitule, volMax, idCompartiment) VALUES (?,?,?)"
+            d = (str(intitule), str(volmax), str(idCo))
+            cursor.execute(r, d)
+            conn.commit()
+
+            query8 = "SELECT idReservoir FROM Reservoir WHERE Intitule='" + str(intitule) + "'"
+            cursor.execute(query8)
+            ok = cursor.fetchone()
+            id = int(''.join(map(str, ok)))
+
+            query11 = "SELECT idCompartiment FROM Reservoir WHERE Intitule='" + str(intitule) + "'"
+            cursor.execute(query11)
+            okY = cursor.fetchone()
+            idC = int(''.join(map(str, okY)))
+
+            query12 = "SELECT volMax FROM Reservoir WHERE Intitule='" + str(intitule) + "'"
+            cursor.execute(query12)
+            okZ = cursor.fetchone()
+            vm = float(''.join(map(str, okZ)))
+
+            filename = filedialog.askopenfilename(filetypes=(("xlsx files", "*.xlsx"), ("All files", "*.*")))
+            read_file = pd.read_excel(filename)
+            x = filename.__str__()
+            print(type(x))
+            y = x[:-5]
+            print(y)
+
+            # Write the dataframe object
+            # into csv file
+            read_file.to_csv(y + "_.csv", index=False)
+
+            # read csv file and convert
+            # into a dataframe object
+            df = pd.DataFrame(pd.read_csv(y + "_.csv"))
+
+            print(df)
+            with open(y + "_.csv", newline='') as fichier:
+                spamreader = csv.reader(fichier, delimiter=',', quotechar='\"')
+                for row in spamreader:
+                    requete = "INSERT INTO TankValues(height,vol,weight,VCG,LCG,TCG,ITDN,idReservoir) VALUES("
+                    requete += "\"" + row[0] + "\",\"" + row[1] + "\",\"" + row[2] + "\",\"" + row[3] + "\",\"" + row[4] + \
+                            "\",\"" + row[5] + "\",\"" + row[6] + "\",\"" + str(id) + "\")"
+                    cursor.execute(requete)
+                    conn.commit()
+
+            calcul_donnees(0, id, idC, vm)
+
+        b2 = tk.Button(root, text="Enregistrer", font=40, command=browsefunc)
+        b2.grid(row=4, column=3)
+
+        root.mainloop()
+def recuperer_donnee_82():
+            
+        X = []
+        Y = []
+        A = []
+        B = []
+        query1 = "SELECT height FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query1)
+        result = cursor.fetchall()
+        list1 = [list[0] for list in result]
+        '-'
+        query2 = "SELECT vol FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query2)
+        result2 = cursor.fetchall()
+        list2 = [list[0] for list in result2]
+        '-'
+        query3 = "SELECT weight FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query3)
+        result3 = cursor.fetchall()
+        list3 = [list[0] for list in result3]
+        '-'
+        query4 = "SELECT VCG FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query4)
+        result4 = cursor.fetchall()
+        list4 = [list[0] for list in result4]
+        '-'
+        query5 = "SELECT LCG FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query5)
+        result5 = cursor.fetchall()
+        list5 = [list[0] for list in result5]
+        '-'
+        query6 = "SELECT TCG FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query6)
+        result6 = cursor.fetchall()
+        list6 = [list[0] for list in result6]
+        '-'
+        query7 = "SELECT ITDN FROM TankValues WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query7)
+        result7 = cursor.fetchall()
+        list7 = [list[0] for list in result7]
+
+        '-'
+        query10 = "SELECT Volume FROM Reservoir WHERE idReservoir='" + str(82) + "'"
+        cursor.execute(query10)
+        ok3 = cursor.fetchone()
+        volume = (''.join(map(str, ok3)))
+
+        y_ = float(volume)
+        i = 0
+        for x in list2:
+            if (y_ < x):
+                break
+            else:
+                i = i + 1
+                print(x, "-", i)
+
+        X.append(list1[i - 1])
+        X.append(list2[i - 1])
+        X.append(list3[i - 1])
+        X.append(list4[i - 1])
+        X.append(list5[i - 1])
+        X.append(list6[i - 1])
+        X.append(list7[i - 1])
+
+        Y.append(list1[i])
+        Y.append(list2[i])
+        Y.append(list3[i])
+        Y.append(list4[i])
+        Y.append(list5[i])
+        Y.append(list6[i])
+        Y.append(list7[i])
+
+        for i in range(7):
+            A.append(round(Y[i] - X[i], 4))
+
+        r = round(y_ - X[1], 2)
+        B.append(round((r * A[0]) / A[1], 4))
+        B.append(r)
+        B.append(round((B[1] * A[2]) / A[1], 4))
+        B.append(round((B[1] * A[3]) / A[1], 4))
+        B.append(round((B[1] * A[4]) / A[1], 4))
+        B.append(round((B[1] * A[5]) / A[1], 4))
+        B.append(round((B[1] * A[6]) / A[1], 4))
+        '-'
+
+        h = round(X[0] + B[0], 2)
+        v = round(X[1] + B[1], 2)
+        w = round(X[2] + B[2], 2)
+        vcg = round(X[3] + B[3], 2)
+        lcg = round(X[4] + B[4], 2)
+        tcg = round(X[5] + B[5], 2)
+        itdn = round(X[6] + B[6], 2)
+        print('X=', X)
+        print('Y=', Y)
+        print(A)
+        print(B)
+
+        return A[1], B[1]
+
+
+def recuperer_donnee_80(ALPHA: float, BETA: float):
+        X = []
+        Y = []
+        A = []
+        B = []
+        query1 = "SELECT height FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query1)
+        result = cursor.fetchall()
+        list1 = [list[0] for list in result]
+        '-'
+        query2 = "SELECT vol FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query2)
+        result2 = cursor.fetchall()
+        list2 = [list[0] for list in result2]
+        '-'
+        query3 = "SELECT weight FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query3)
+        result3 = cursor.fetchall()
+        list3 = [list[0] for list in result3]
+        '-'
+        query4 = "SELECT VCG FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query4)
+        result4 = cursor.fetchall()
+        list4 = [list[0] for list in result4]
+        '-'
+        query5 = "SELECT LCG FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query5)
+        result5 = cursor.fetchall()
+        list5 = [list[0] for list in result5]
+        '-'
+        query6 = "SELECT TCG FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query6)
+        result6 = cursor.fetchall()
+        list6 = [list[0] for list in result6]
+        '-'
+        query7 = "SELECT ITDN FROM TankValues WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query7)
+        result7 = cursor.fetchall()
+        list7 = [list[0] for list in result7]
+
+        '-'
+        query10 = "SELECT Volume FROM Reservoir WHERE idReservoir='" + str(80) + "'"
+        cursor.execute(query10)
+        ok3 = cursor.fetchone()
+        volume = (''.join(map(str, ok3)))
+
+        y_ = float(volume)
+        i = 0
+        for x in list2:
+            if (y_ < x):
+                break
+            else:
+                i = i + 1
+                print(x, "-", i)
+
+        X.append(list1[i - 1])
+        X.append(list2[i - 1])
+        X.append(list3[i - 1])
+        X.append(list4[i - 1])
+        X.append(list5[i - 1])
+        X.append(list6[i - 1])
+        X.append(list7[i - 1])
+
+        Y.append(list1[i])
+        Y.append(list2[i])
+        Y.append(list3[i])
+        Y.append(list4[i])
+        Y.append(list5[i])
+        Y.append(list6[i])
+        Y.append(list7[i])
+
+        for i in range(7):
+            A.append(round(Y[i] - X[i], 4))
+
+        r = round(y_ - X[1], 2)
+        B.append(round((r * A[0]) / A[1], 4))
+        B.append(r)
+        B.append(round((BETA * A[2]) / ALPHA, 4))
+        B.append(round((BETA * A[3]) / ALPHA, 4))
+        B.append(round((BETA * A[4]) / ALPHA, 4))
+        B.append(round((BETA * A[5]) / ALPHA, 4))
+        vcg = round(X[3] + B[3], 2)
+        lcg = round(X[4] + B[4], 2)
+        tcg = round(X[5] + B[5], 2)
+        cursor.execute("UPDATE Reservoir SET LCG = '" + str(lcg) + "', TCG = '" + str(tcg)
+                    + "', VCG = '" + str(vcg) + "', idCompartiment = '"
+                    + str(1) + "' WHERE idReservoir='" + str(80) + "'")
+
+        conn.commit()
+
+
+def calcul_donnees(y: float, id: int, idC: int, vm: int):
+        X = []
+        Y = []
+        A = []
+        B = []
+        query1 = "SELECT height FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query1)
+        result = cursor.fetchall()
+        list1 = [list[0] for list in result]
+        '-'
+        query2 = "SELECT vol FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query2)
+        result2 = cursor.fetchall()
+        list2 = [list[0] for list in result2]
+        '-'
+        query3 = "SELECT weight FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query3)
+        result3 = cursor.fetchall()
+        list3 = [list[0] for list in result3]
+        '-'
+        query4 = "SELECT VCG FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query4)
+        result4 = cursor.fetchall()
+        list4 = [list[0] for list in result4]
+        '-'
+        query5 = "SELECT LCG FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query5)
+        result5 = cursor.fetchall()
+        list5 = [list[0] for list in result5]
+        '-'
+        query6 = "SELECT TCG FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query6)
+        result6 = cursor.fetchall()
+        list6 = [list[0] for list in result6]
+        '-'
+        query7 = "SELECT ITDN FROM TankValues WHERE idReservoir='" + str(id) + "'"
+        cursor.execute(query7)
+        result7 = cursor.fetchall()
+        list7 = [list[0] for list in result7]
+
+        '-'
+        i = 0
+        for x in list2:
+            if (y < x):
+                break
+            else:
+                i = i + 1
+                print(x, "-", i)
+
+        X.append(list1[i - 1])
+        X.append(list2[i - 1])
+        X.append(list3[i - 1])
+        X.append(list4[i - 1])
+        X.append(list5[i - 1])
+        X.append(list6[i - 1])
+        X.append(list7[i - 1])
+
+        Y.append(list1[i])
+        Y.append(list2[i])
+        Y.append(list3[i])
+        Y.append(list4[i])
+        Y.append(list5[i])
+        Y.append(list6[i])
+        Y.append(list7[i])
+
+        for i in range(7):
+            A.append(round(Y[i] - X[i], 4))
+
+        r = round(y - X[1], 2)
+        B.append(round((r * A[0]) / A[1], 4))
+        B.append(r)
+        '''A etudier'''
+        if id == 80:
+            ALPHA, BETA = recuperer_donnee_82()
+            print(ALPHA, BETA)
+            B.append(round((BETA * A[2]) / ALPHA, 4))
+            B.append(round((BETA * A[3]) / ALPHA, 4))
+            B.append(round((BETA * A[4]) / ALPHA, 4))
+            B.append(round((BETA * A[5]) / ALPHA, 4))
+            B.append(round((BETA * A[6]) / ALPHA, 4))
+        elif id == 82:
+            ALPHA, BETA = recuperer_donnee_82()
+            print(ALPHA, BETA)
+            recuperer_donnee_80(ALPHA, BETA)
+            B.append(round((B[1] * A[2]) / A[1], 4))
+            B.append(round((B[1] * A[3]) / A[1], 4))
+            B.append(round((B[1] * A[4]) / A[1], 4))
+            B.append(round((B[1] * A[5]) / A[1], 4))
+            B.append(round((B[1] * A[6]) / A[1], 4))
+        else:
+            B.append(round((B[1] * A[2]) / A[1], 4))
+            B.append(round((B[1] * A[3]) / A[1], 4))
+            B.append(round((B[1] * A[4]) / A[1], 4))
+            B.append(round((B[1] * A[5]) / A[1], 4))
+            B.append(round((B[1] * A[6]) / A[1], 4))
+
+        h = round(X[0] + B[0], 2)
+        v = round(X[1] + B[1], 2)
+        w = round(X[2] + B[2], 2)
+        vcg = round(X[3] + B[3], 2)
+        lcg = round(X[4] + B[4], 2)
+        tcg = round(X[5] + B[5], 2)
+        itdn = round(X[6] + B[6], 2)
+        level = 0
+
+        if v != 0:
+            level = round((v / float(vm)), 2)
+
+        print('X=', X)
+        print('Y=', Y)
+        print(A)
+        print(B)
+        print(h, v, w, vcg, lcg, tcg, itdn)
+        cursor.execute("UPDATE Reservoir SET Volume = '" + str(v) + "', Weight = '" + str(w) + "', LCG = '" + str(
+            lcg) + "', TCG = '" + str(tcg) + "', VCG = '" + str(vcg) + "', FSM = '" + str(itdn) + "', volMax = '" + str(
+            vm) + "', niveau = '" + str(level) + "', idCompartiment = '" + str(idC) + "' WHERE idReservoir='" + str(
+            id) + "'")
+
+        conn.commit()
+
+
+def calcul_donnees2(y: float, idp: int, vm: int, idB: int):
+        level = 0
+        if y != 0:
+            level = round((y / float(vm)), 2)
+
+        w = 0
+        if y != 0:
+            w = round(((y * 85) / 1000), 2)
+
+        print(level, w)
+        cursor.execute("UPDATE Passager SET Volume = '" + str(y) + "', Weight = '" + str(w) + "', volMax = '" + str(
+            vm) + "', niveau = '" + str(level) + "', idBateau = '" + str(idB) + "' WHERE idPassager='" + str(
+            idp) + "'")
+
+        conn.commit()
+
+
+def calcul_donnees3(y: float, idCg: int, vm: int, idB: int):
+        level = 0
+        if y != 0:
+            level = round((y / float(vm)), 3)
+
+        print(level, y)
+        cursor.execute("UPDATE Cargo SET Weight = '" + str(y) + "', volMax = '" + str(vm) + "', niveau = '"
+                    + str(level) + "', idBateau = '" + str(idB) + "' WHERE idCargo='" + str(idCg) + "'")
+
+        conn.commit()
+
+
+def fetch(entries):
+    for entry in entries:
+        field = entry[0]
+        text = float(entry[1].get())
+        cursor = conn.cursor()
+        query10 = "SELECT idReservoir, volMax, idCompartiment FROM Reservoir WHERE Intitule='" + field + "'"
+        cursor.execute(query10)
+        ok = cursor.fetchone()
+        print(ok)
+
+        a, b, c = ok[0], float(ok[1]), ok[2]
+        print(field, " ", a, " ", b, " ", c)
+        calcul_donnees(text, a, c, b)
+        print("fini_")
+
+def fetch2(entries):
+    for entry in entries:
+        field = entry[0]
+        text = float(entry[1].get())
+        cursor = conn.cursor()
+        query10 = "SELECT idPassager, volMax, idBateau FROM Passager WHERE Intitule='" + field + "'"
+        cursor.execute(query10)
+        ok = cursor.fetchone()
+        print(ok)
+
+        a, b, c = ok[0], float(ok[1]), ok[2]
+        print(field, " ", a, " ", b, " ", c)
+        calcul_donnees2(text, a, b, c)
+        print("fini_")
+    
+
+
+
+
+# Utilisation des classes
+db = sqlite3.connect("stabilisateur.db")
+reservoir_manager = Reservoir(db)
+reservoir_manager.ajout_reservoir()
